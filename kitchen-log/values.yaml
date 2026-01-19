@@ -144,7 +144,7 @@ mysql:
   password: ""
   persistence:
     enabled: true
-    storageClass: "standard-rwo"
+    storageClass: ""
     accessMode: ReadWriteOnce
     size: 10Gi
 
@@ -152,7 +152,7 @@ mysql:
 persistence:
   logs:
     enabled: true
-    storageClass: "standard-rwo"
+    storageClass: ""
     accessMode: ReadWriteOnce
     size: 5Gi
 
