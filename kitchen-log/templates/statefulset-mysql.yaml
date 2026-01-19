@@ -1,10 +1,9 @@
-# templates/statefulset-mysql.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "kitchen-log.fullname" . }}-mysql
-  # annotations:
-  #   argocd.argoproj.io/sync-wave: "1"
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
     app.kubernetes.io/component: mysql
@@ -34,16 +33,16 @@ spec:
               name: {{ include "kitchen-log.fullname" . }}-mysql
               key: rootPassword
         - name: MYSQL_DATABASE
-          value: {{ .Values.mysql.database }}
+          value: {{ .Values.mysql.database | quote }}
         - name: MYSQL_USER
-          value: {{ .Values.mysql.user }}
+          value: {{ .Values.mysql.user | quote }}
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "kitchen-log.fullname" . }}-mysql
               key: password
         - name: TZ
-          value: {{ .Values.timezone }}
+          value: {{ .Values.timezone | quote }}
         args:
         - "--character-set-server=utf8mb4"
         - "--collation-server=utf8mb4_unicode_ci"
@@ -76,7 +75,7 @@ spec:
         resources:
           {{- toYaml .Values.resources.mysql | nindent 12 }}
         volumeMounts:
-        - name: mysql-data
+        - name: data
           mountPath: /var/lib/mysql
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -89,18 +88,16 @@ spec:
   {{- if .Values.mysql.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
-      name: mysql-data
+      name: data
     spec:
       accessModes:
-      - {{ .Values.mysql.persistence.accessMode }}
-      {{- if .Values.mysql.persistence.storageClass }}
-      storageClassName: {{ .Values.mysql.persistence.storageClass }}
-      {{- end }}
+        - ReadWriteOnce
+      storageClassName: {{ .Values.mysql.persistence.storageClass | quote }}
       resources:
         requests:
-          storage: {{ .Values.mysql.persistence.size }}
+          storage: {{ .Values.mysql.persistence.size | quote }}
   {{- else }}
-    volumes:
-    - name: mysql-data
-      emptyDir: {}
+      volumes:
+      - name: data
+        emptyDir: {}
   {{- end }}

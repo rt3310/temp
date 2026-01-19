@@ -1,0 +1,37 @@
+# 개발 환경 설정
+replicaCount: 1
+
+spring:
+  profile: "dev"
+
+service:
+  spring:
+    type: NodePort
+    nodePort: 30080
+
+mysql:
+  persistence:
+    size: 5Gi
+
+persistence:
+  logs:
+    size: 2Gi
+
+resources:
+  spring:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  mysql:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+autoscaling:
+  enabled: false

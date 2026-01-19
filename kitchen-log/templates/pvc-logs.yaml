@@ -1,19 +1,18 @@
-{{- if .Values.persistence.enabled }}
+{{- if .Values.persistence.logs.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "kitchen-log.fullname" . }}-logs
-  # annotations:
-  #   argocd.argoproj.io/sync-wave: "0"
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
+    app.kubernetes.io/component: logs
 spec:
   accessModes:
-    - {{ .Values.persistence.accessMode }}
-  {{- if .Values.persistence.storageClass }}
-  storageClassName: {{ .Values.persistence.storageClass }}
-  {{- end }}
+    - ReadWriteOnce
+  storageClassName: {{ .Values.persistence.logs.storageClass | quote }}
   resources:
     requests:
-      storage: {{ .Values.persistence.size }}
+      storage: {{ .Values.persistence.logs.size | quote }}
 {{- end }}

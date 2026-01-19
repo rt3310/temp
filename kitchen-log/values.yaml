@@ -1,9 +1,11 @@
+# 기본 설정
 replicaCount: 1
 
+# 이미지 설정
 image:
   spring:
     repository: seoarc/kitchen-log-server
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     tag: "latest"
   mysql:
     repository: mysql
@@ -13,30 +15,29 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# ServiceAccount 설정
 serviceAccount:
   create: true
-  automount: false
+  automountServiceAccountToken: false
   annotations: {}
   name: ""
 
+# Pod 설정
 podAnnotations: {}
-
-podLabels: {}
-
 podSecurityContext: {}
-
 securityContext: {}
 
+# Service 설정
 service:
   spring:
     type: NodePort
     port: 8080
-    nodePort: 31000
+    nodePort: 30080
   mysql:
     type: ClusterIP
     port: 3306
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+# Ingress 설정
 ingress:
   enabled: false
   className: "nginx"
@@ -44,29 +45,16 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
   hosts:
-    - host: dev.foodkeeper.shop
+    - host: api.example.com
       paths:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: food-keeper-tls
+    - secretName: kitchen-log-tls
       hosts:
-        - dev.foodkeeper.shop
+        - api.example.com
 
-httpRoute:
-  enabled: false
-  annotations: {}
-  parentRefs:
-    - name: gateway
-      sectionName: http
-  hostnames:
-    - chart-example.local
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /headers
-
+# 리소스 설정 (e2-medium 기준)
 resources:
   spring:
     limits:
@@ -83,15 +71,7 @@ resources:
       cpu: 500m
       memory: 1Gi
 
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
-
+# HPA 설정
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -99,41 +79,28 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
-volumes: []
-
-volumeMounts: []
-
+# Node Selector
 nodeSelector: {}
 
+# Tolerations
 tolerations: []
 
-affinity:
-  spring:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: app.kubernetes.io/component
-                  operator: In
-                  values:
-                    - spring
-            topologyKey: kubernetes.io/hostname
+# Affinity
+affinity: {}
 
-# Application configuration
+# 애플리케이션 설정
 spring:
-  profile: "" # dev 또는 prod를 외부에서 주입
+  profile: "dev"
 
 timezone: "Asia/Seoul"
 
-# AWS Configuration - 외부에서 주입 필요
+# AWS 설정 (외부 주입)
 aws:
   accessKeyId: ""
   secretAccessKey: ""
   region: "ap-northeast-2"
 
-# MySQL Configuration - 외부에서 주입 필요
+# MySQL 설정 (외부 주입)
 mysql:
   rootPassword: ""
   database: "kitchenlog"
@@ -142,17 +109,25 @@ mysql:
   persistence:
     enabled: true
     storageClass: "standard"
-    accessMode: ReadWriteOnce
     size: 10Gi
 
-# Persistence
+# 로그 Persistence 설정
 persistence:
-  enabled: true
-  storageClass: "standard"
-  accessMode: ReadWriteOnce
-  size: 20Gi
+  logs:
+    enabled: true
+    storageClass: "standard"
+    size: 5Gi
 
-# Health Check
+# StorageClass 설정
+storageClass:
+  create: true
+  standard:
+    name: "standard"
+    isDefault: true
+  premium:
+    name: "premium-rwo"
+
+# Health Check 설정
 healthCheck:
   enabled: true
   livenessProbe:
@@ -165,26 +140,3 @@ healthCheck:
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 3
-
-# StorageClass Configuration
-storageClass:
-  create: true
-
-  standard:
-    name: "standard"
-    isDefault: true
-    provisioner: "pd.csi.storage.gke.io"
-    type: "pd-standard"
-    fstype: "ext4"
-    volumeBindingMode: "WaitForFirstConsumer"
-    allowVolumeExpansion: true
-    reclaimPolicy: "Delete"
-
-  premium:
-    name: "premium-rwo"
-    provisioner: "pd.csi.storage.gke.io"
-    type: "pd-ssd"
-    fstype: "ext4"
-    volumeBindingMode: "WaitForFirstConsumer"
-    allowVolumeExpansion: true
-    reclaimPolicy: "Delete"
