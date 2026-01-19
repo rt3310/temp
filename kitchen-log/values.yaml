@@ -141,14 +141,14 @@ mysql:
   password: ""
   persistence:
     enabled: true
-    storageClass: "standard-rwo"
+    storageClass: ""
     accessMode: ReadWriteOnce
     size: 10Gi
 
 # Persistence
 persistence:
   enabled: true
-  storageClass: "standard-rwo"
+  storageClass: ""
   accessMode: ReadWriteOnce
   size: 20Gi
 
