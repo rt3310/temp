@@ -83,7 +83,7 @@ spec:
           mountPath: /var/log/kitchen-log
       volumes:
       - name: logs
-        {{- if .Values.persistence.logs.enabled }}
+        {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
           claimName: {{ include "kitchen-log.fullname" . }}-logs
         {{- else }}

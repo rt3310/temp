@@ -1,4 +1,4 @@
-{{- if .Values.persistence.logs.enabled }}
+{{- if .Values.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -7,11 +7,11 @@ metadata:
     {{- include "kitchen-log.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - {{ .Values.persistence.logs.accessMode }}
-  {{- if .Values.persistence.logs.storageClass }}
-  storageClassName: {{ .Values.persistence.logs.storageClass }}
+    - {{ .Values.persistence.accessMode }}
+  {{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass }}
   {{- end }}
   resources:
     requests:
-      storage: {{ .Values.persistence.logs.size }}
+      storage: {{ .Values.persistence.size }}
 {{- end }}
