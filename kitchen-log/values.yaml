@@ -173,16 +173,16 @@ storageClass:
   standard:
     name: "standard"
     isDefault: true
-    provisioner: "kubernetes.io/gce-pd"
+    provisioner: "pd.csi.storage.gke.io"
     type: "pd-standard"
     fstype: "ext4"
-    volumeBindingMode: "Immediate"
+    volumeBindingMode: "WaitForFirstConsumer"
     allowVolumeExpansion: true
     reclaimPolicy: "Delete"
 
   premium:
     name: "premium-rwo"
-    provisioner: "kubernetes.io/gce-pd"
+    provisioner: "pd.csi.storage.gke.io"
     type: "pd-ssd"
     fstype: "ext4"
     volumeBindingMode: "WaitForFirstConsumer"

@@ -90,9 +90,6 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: mysql-data
-      annotations:
-        volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/gce-pd
-        volume.kubernetes.io/storage-provisioner: kubernetes.io/gce-pd
     spec:
       accessModes:
       - {{ .Values.mysql.persistence.accessMode }}
