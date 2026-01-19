@@ -5,8 +5,8 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: {{ .Values.storageClass.standard.name }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+  # annotations:
+  #   argocd.argoproj.io/sync-wave: "-1"
     {{- if .Values.storageClass.standard.isDefault }}
     storageclass.kubernetes.io/is-default-class: "true"
     {{- end }}

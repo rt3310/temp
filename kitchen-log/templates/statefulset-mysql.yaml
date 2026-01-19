@@ -3,8 +3,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "kitchen-log.fullname" . }}-mysql
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
+  # annotations:
+  #   argocd.argoproj.io/sync-wave: "1"
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
     app.kubernetes.io/component: mysql

@@ -3,8 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "kitchen-log.fullname" . }}-spring
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
+  # annotations:
+  #   argocd.argoproj.io/sync-wave: "2"
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
     app.kubernetes.io/component: spring

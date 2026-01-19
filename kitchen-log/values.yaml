@@ -176,7 +176,7 @@ storageClass:
     provisioner: "pd.csi.storage.gke.io"
     type: "pd-standard"
     fstype: "ext4"
-    volumeBindingMode: "Immediate"
+    volumeBindingMode: "WaitForFirstConsumer"
     allowVolumeExpansion: true
     reclaimPolicy: "Delete"
 

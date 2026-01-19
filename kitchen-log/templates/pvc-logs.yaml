@@ -3,8 +3,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "kitchen-log.fullname" . }}-logs
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
+  # annotations:
+  #   argocd.argoproj.io/sync-wave: "0"
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
 spec:
