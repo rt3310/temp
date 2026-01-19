@@ -1,0 +1,171 @@
+replicaCount: 1
+
+image:
+  spring:
+    repository: seoarc/kitchen-log-server
+    pullPolicy: Always
+    tag: "latest"
+  mysql:
+    repository: mysql
+    tag: "8.0.44-debian"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  spring:
+    type: NodePort
+    port: 8080
+    nodePort: 31000
+  mysql:
+    type: ClusterIP
+    port: 3306
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: dev.foodkeeper.shop
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: food-keeper-tls
+      hosts:
+        - dev.foodkeeper.shop
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+    - name: gateway
+      sectionName: http
+  hostnames:
+    - chart-example.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /headers
+
+resources:
+  spring:
+    limits:
+      cpu: 800m
+      memory: 1536Mi
+    requests:
+      cpu: 400m
+      memory: 768Mi
+  mysql:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+volumes: []
+
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  spring:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - spring
+            topologyKey: kubernetes.io/hostname
+
+# Application configuration
+# 배포시 --set spring.profile=dev 또는 --set spring.profile=prod 로 설정
+spring:
+  profile: "" # dev 또는 prod를 외부에서 주입
+
+timezone: "Asia/Seoul"
+
+# AWS Configuration - 외부에서 주입 필요
+# --set-file aws.accessKeyId=./secrets/aws-key.txt 또는
+# --set aws.accessKeyId="YOUR_KEY" 형태로 주입
+aws:
+  accessKeyId: ""
+  secretAccessKey: ""
+  region: "ap-northeast-2"
+
+# MySQL Configuration - 외부에서 주입 필요
+mysql:
+  rootPassword: ""
+  database: "kitchen_log"
+  user: "kitchen_log"
+  password: ""
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 10Gi
+
+# Persistence
+persistence:
+  logs:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 5Gi
+
+# Health Check
+healthCheck:
+  enabled: true
+  livenessProbe:
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3

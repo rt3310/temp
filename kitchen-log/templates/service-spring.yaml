@@ -1,0 +1,21 @@
+# templates/service-spring.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kitchen-log.fullname" . }}-spring
+  labels:
+    {{- include "kitchen-log.labels" . | nindent 4 }}
+    app.kubernetes.io/component: spring
+spec:
+  type: {{ .Values.service.spring.type }}
+  ports:
+  - port: {{ .Values.service.spring.port }}
+    targetPort: http
+    protocol: TCP
+    name: http
+    {{- if and (eq .Values.service.spring.type "NodePort") .Values.service.spring.nodePort }}
+    nodePort: {{ .Values.service.spring.nodePort }}
+    {{- end }}
+  selector:
+    {{- include "kitchen-log.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: spring

@@ -1,0 +1,19 @@
+# templates/service-mysql.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kitchen-log.fullname" . }}-mysql
+  labels:
+    {{- include "kitchen-log.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  type: {{ .Values.service.mysql.type }}
+  clusterIP: None
+  ports:
+  - port: {{ .Values.service.mysql.port }}
+    targetPort: mysql
+    protocol: TCP
+    name: mysql
+  selector:
+    {{- include "kitchen-log.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql

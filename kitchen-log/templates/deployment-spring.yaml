@@ -1,0 +1,103 @@
+# templates/deployment-spring.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kitchen-log.fullname" . }}-spring
+  labels:
+    {{- include "kitchen-log.labels" . | nindent 4 }}
+    app.kubernetes.io/component: spring
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kitchen-log.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: spring
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kitchen-log.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: spring
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kitchen-log.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: spring
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.spring.repository }}:{{ .Values.image.spring.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.spring.pullPolicy }}
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: {{ .Values.spring.profile }}
+        - name: TZ
+          value: {{ .Values.timezone }}
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "kitchen-log.fullname" . }}-aws
+              key: accessKeyId
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "kitchen-log.fullname" . }}-aws
+              key: secretAccessKey
+        - name: AWS_REGION
+          value: {{ .Values.aws.region }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        {{- if .Values.healthCheck.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.healthCheck.livenessProbe.failureThreshold }}
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.healthCheck.readinessProbe.failureThreshold }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources.spring | nindent 12 }}
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log/kitchen-log
+      volumes:
+      - name: logs
+        {{- if .Values.persistence.logs.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "kitchen-log.fullname" . }}-logs
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity.spring }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
