@@ -11,7 +11,8 @@ image:
     repository: mysql
     tag: "8.0.44-debian"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: dockerhub-secret
 nameOverride: ""
 fullnameOverride: ""
 
@@ -68,22 +69,22 @@ ingress:
       hosts:
         - api.example.com
 
-# 리소스 설정 (e2-medium 기준)
+# 리소스 설정
 resources:
   spring:
     limits:
-      cpu: 800m
-      memory: 1536Mi
+      cpu: 500m
+      memory: 512Mi
     requests:
-      cpu: 400m
-      memory: 768Mi
+      cpu: 100m
+      memory: 256Mi
   mysql:
     limits:
-      cpu: 1000m
-      memory: 2Gi
-    requests:
       cpu: 500m
       memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
 
 # HPA 설정
 autoscaling:
