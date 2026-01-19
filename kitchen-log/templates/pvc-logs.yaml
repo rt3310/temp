@@ -5,6 +5,8 @@ metadata:
   name: {{ include "kitchen-log.fullname" . }}-logs
   annotations:
     argocd.argoproj.io/sync-wave: "0"
+    volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/gce-pd
+    volume.kubernetes.io/storage-provisioner: kubernetes.io/gce-pd
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
 spec:
