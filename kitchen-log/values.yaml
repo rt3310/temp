@@ -165,3 +165,26 @@ healthCheck:
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 3
+
+# StorageClass Configuration
+storageClass:
+  create: true
+
+  standard:
+    name: "standard"
+    isDefault: true
+    provisioner: "kubernetes.io/gce-pd"
+    type: "pd-standard"
+    fstype: "ext4"
+    volumeBindingMode: "Immediate"
+    allowVolumeExpansion: true
+    reclaimPolicy: "Delete"
+
+  premium:
+    name: "premium-rwo"
+    provisioner: "kubernetes.io/gce-pd"
+    type: "pd-ssd"
+    fstype: "ext4"
+    volumeBindingMode: "WaitForFirstConsumer"
+    allowVolumeExpansion: true
+    reclaimPolicy: "Delete"

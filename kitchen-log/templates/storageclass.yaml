@@ -1,0 +1,48 @@
+{{- if .Values.storageClass.create }}
+---
+# Standard (HDD) StorageClass
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.standard.name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    {{- if .Values.storageClass.standard.isDefault }}
+    storageclass.kubernetes.io/is-default-class: "true"
+    {{- end }}
+  labels:
+    {{- include "kitchen-log.labels" . | nindent 4 }}
+provisioner: {{ .Values.storageClass.standard.provisioner }}
+parameters:
+  type: {{ .Values.storageClass.standard.type }}
+  {{- if .Values.storageClass.standard.fstype }}
+  fstype: {{ .Values.storageClass.standard.fstype }}
+  {{- end }}
+  {{- if .Values.storageClass.standard.replicationType }}
+  replication-type: {{ .Values.storageClass.standard.replicationType }}
+  {{- end }}
+volumeBindingMode: {{ .Values.storageClass.standard.volumeBindingMode }}
+allowVolumeExpansion: {{ .Values.storageClass.standard.allowVolumeExpansion }}
+reclaimPolicy: {{ .Values.storageClass.standard.reclaimPolicy }}
+
+---
+# Premium (SSD) StorageClass
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.premium.name }}
+  labels:
+    {{- include "kitchen-log.labels" . | nindent 4 }}
+provisioner: {{ .Values.storageClass.premium.provisioner }}
+parameters:
+  type: {{ .Values.storageClass.premium.type }}
+  {{- if .Values.storageClass.premium.fstype }}
+  fstype: {{ .Values.storageClass.premium.fstype }}
+  {{- end }}
+  {{- if .Values.storageClass.premium.replicationType }}
+  replication-type: {{ .Values.storageClass.premium.replicationType }}
+  {{- end }}
+volumeBindingMode: {{ .Values.storageClass.premium.volumeBindingMode }}
+allowVolumeExpansion: {{ .Values.storageClass.premium.allowVolumeExpansion }}
+reclaimPolicy: {{ .Values.storageClass.premium.reclaimPolicy }}
+{{- end }}
