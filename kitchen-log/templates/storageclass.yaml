@@ -9,11 +9,11 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
-provisioner: pd.csi.storage.gke.io
+provisioner: rancher.io/local-path
 parameters:
   type: pd-standard
   fstype: ext4
-volumeBindingMode: Immediate
+volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 reclaimPolicy: Delete
 
@@ -26,11 +26,11 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
-provisioner: pd.csi.storage.gke.io
+provisioner: rancher.io/local-path
 parameters:
   type: pd-ssd
   fstype: ext4
-volumeBindingMode: Immediate
+volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 reclaimPolicy: Delete
 {{- end }}
