@@ -150,11 +150,10 @@ mysql:
 
 # Persistence
 persistence:
-  logs:
-    enabled: true
-    storageClass: "standard-rwo"
-    accessMode: ReadWriteOnce
-    size: 5Gi
+  enabled: true
+  storageClass: "standard-rwo"
+  accessMode: ReadWriteOnce
+  size: 20Gi
 
 # Health Check
 healthCheck:
