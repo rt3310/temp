@@ -122,15 +122,12 @@ affinity:
             topologyKey: kubernetes.io/hostname
 
 # Application configuration
-# 배포시 --set spring.profile=dev 또는 --set spring.profile=prod 로 설정
 spring:
   profile: "" # dev 또는 prod를 외부에서 주입
 
 timezone: "Asia/Seoul"
 
 # AWS Configuration - 외부에서 주입 필요
-# --set-file aws.accessKeyId=./secrets/aws-key.txt 또는
-# --set aws.accessKeyId="YOUR_KEY" 형태로 주입
 aws:
   accessKeyId: ""
   secretAccessKey: ""
@@ -139,8 +136,8 @@ aws:
 # MySQL Configuration - 외부에서 주입 필요
 mysql:
   rootPassword: ""
-  database: "kitchen_log"
-  user: "kitchen_log"
+  database: "kitchenlog"
+  user: "kitchenlogmg"
   password: ""
   persistence:
     enabled: true
