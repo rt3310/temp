@@ -10,11 +10,7 @@ metadata:
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
 provisioner: rancher.io/local-path
-parameters:
-  type: pd-standard
-  fstype: ext4
 volumeBindingMode: WaitForFirstConsumer
-allowVolumeExpansion: true
 reclaimPolicy: Delete
 
 ---
@@ -27,10 +23,6 @@ metadata:
   labels:
     {{- include "kitchen-log.labels" . | nindent 4 }}
 provisioner: rancher.io/local-path
-parameters:
-  type: pd-ssd
-  fstype: ext4
 volumeBindingMode: WaitForFirstConsumer
-allowVolumeExpansion: true
 reclaimPolicy: Delete
 {{- end }}

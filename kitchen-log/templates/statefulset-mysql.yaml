@@ -77,6 +77,11 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
+      {{- if not .Values.mysql.persistence.enabled }}
+      volumes:
+      - name: data
+        emptyDir: {}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -96,8 +101,4 @@ spec:
       resources:
         requests:
           storage: {{ .Values.mysql.persistence.size | quote }}
-  {{- else }}
-      volumes:
-      - name: data
-        emptyDir: {}
   {{- end }}
