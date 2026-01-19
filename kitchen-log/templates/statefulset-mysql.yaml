@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "kitchen-log.fullname" . }}-mysql
+  name: mysql
   annotations:
     argocd.argoproj.io/sync-wave: "1"
   labels:
@@ -30,7 +30,7 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "kitchen-log.fullname" . }}-mysql
+              name: mysql
               key: rootPassword
         - name: MYSQL_DATABASE
           value: {{ .Values.mysql.database | quote }}
@@ -39,7 +39,7 @@ spec:
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "kitchen-log.fullname" . }}-mysql
+              name: mysql
               key: password
         - name: TZ
           value: {{ .Values.timezone | quote }}
